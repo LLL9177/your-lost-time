@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Lost time overall...</title>
+    <link rel="stylesheet" href="../static/style.css">
+  </head>
+  <body>
+    <h1 id="h1">Your lost time from the moment you've registered.</h1>
+    {{ time }}
+    <label for="h1">How much did you loose today in minutes?</label>
+    <form action="/" method="post">
+      <input type="number" name="time_lost" required>
+      <button type="submit">Submit my time</button>
+    </form>
+
+    <div class="popup-register hidden">
+      <h1>Seems like you don't have an account. Create a new one.</h1>
+      <form method="post" action="/auth/register">
+        <input type="text" name="username">
+        <button type="submit">register</button>
+      </form>
+    </div>
+
+    <a href="/drop/cookies">Register or log in again</a>
+
+    <script src="../static/main.js"></script>
+  </body>
+</html>
