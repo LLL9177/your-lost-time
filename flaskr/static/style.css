@@ -4,26 +4,111 @@
   box-sizing: border-box;
 }
 
-.hidden {
-  display: none !important;
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  justify-content: center;
+  align-items: center;
 }
+
+.dimmer {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  z-index: -1;
+  background-color: rgba(0, 0, 0, 0.5);
+  top: 0;
+  transition: opacity 2s ease;
+}
+
+.hidden {
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.fully_hidden {
+  display: none;
+}
+
+button {
+  cursor: pointer;
+}
+
+#h1 {
+  margin-top: 160px;
+  margin-bottom: 200px;
+  font-size: 60px;
+  color: white;
+  font-family: "Radley", serif;
+  font-weight: 400;
+}
+
+.time-lost-counter {
+  color: white;
+  font-size: 45px;
+  margin-bottom: 200px;
+  font-family: "Momo Signature", cursive;
+  font-style: normal;
+  text-shadow: 0px 0px 10px white;
+}
+
+label {
+  color: white;
+  font-family: "Radley", serif;
+  margin-bottom: 50px;
+  font-size: 20px;
+}
+
+.register-again {
+  color: #DDDD;
+  margin-top: 143px;
+  background-color: #171717;
+  width: 500px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  border-top-left-radius: 100px;
+  border-top-right-radius: 100px;
+  border: none;
+  font-family: "Radley", serif;
+  font-size: 18px;
+}
+
+.time-lost-counter input, .time-lost-counter button {
+  -webkit-appearance: none; /* Safari/Chrome */
+  -moz-appearance: none;    /* Firefox */
+  appearance: none;         /* standard */
+  background-color: black;
+  color: white;
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 10px;
+  font-size: 16px;
+}
+
+
 
 .popup-register {
   background-color: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(15px);
   color: white;
-  border: 2px solid rgb(150, 150, 150);
-  width: 500px;
-  height: 450px;
+  border: 2px solid rgb(255, 255, 255);
+  border-radius: 30px;
+  width: 400px;
+  height: 550px;
   display: flex;
   position: absolute;
   justify-content: center;
   align-items: center;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(1);
   flex-direction: column;
   text-align: center;
+  z-index: 10;
+  transition: opacity 0.5s ease, transform 0.3s ease-in-out;
 }
 
 .popup-register form {
@@ -48,4 +133,37 @@
   margin: 15px;
   margin-top: -40px;
   margin-bottom: 60px;
+}
+
+.popup-dimmer {
+  width: 100vw;
+  height: 100vh;
+  backdrop-filter: blur(10px);
+  background-color: rgba(0, 0, 0, 0.3);
+  position: absolute;
+  top: 0;
+}
+
+.flashes {
+  position: absolute;
+  z-index: 20;
+  background-color: rgb(25, 25, 25);
+  left: 100%;
+  top: 10px;
+  transform: translateX(-101%);
+  width: 450px;
+  height: fit-content;
+  color: white;
+  font-size: 13px;
+  transition: opacity 0.5s ease;
+}
+
+.flashes p {
+  padding: 10px;
+}
+
+.timer-line {
+  height: 2px;
+  width: 100%;
+  background-color: aquamarine;
 }

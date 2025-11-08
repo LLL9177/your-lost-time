@@ -3,12 +3,18 @@
   <head>
     <title>Lost time overall...</title>
     <link rel="stylesheet" href="../static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Radley:ital@0;1&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Momo+Signature&display=swap" rel="stylesheet">
   </head>
   <body>
     <h1 id="h1">Your lost time from the moment you've registered.</h1>
     <div class="time-lost-counter">{{ time }}</div>
-    <label for="h1">How much did you loose today in minutes?</label>
-    <form action="/" method="post">
+    <label for="h1">How much time did you loose today in minutes?</label>
+    <form action="/" method="post" class="lost-time_form">
       <input type="number" name="time_lost" required>
       <button type="submit">Submit my time</button>
     </form>
@@ -20,8 +26,21 @@
         <button type="submit">register</button>
       </form>
     </div>
-
-    <a href="/drop/cookies">Register or log in again</a>
+    <div class="popup-dimmer fully_hidden"></div>
+    
+    <button class="register-again">Register or log in again</button>
+    
+    <div class="dimmer hidden"></div>
+    {% with messages=get_flashed_messages() %}
+      {% if messages %}
+        <div class="flashes hidden">
+          <div class="timer-line"></div>
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
 
     <script src="../static/main.js"></script>
   </body>

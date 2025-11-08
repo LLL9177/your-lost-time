@@ -1,12 +1,16 @@
-from flask import Flask, request, render_template, g, session, current_app, redirect, url_for, make_response
+from flask import Flask, request, render_template, g, current_app, redirect, url_for, make_response, flash, get_flashed_messages, session
 from markupsafe import escape
+from dotenv import load_dotenv
 import click
 import sqlite3
 import os
 from datetime import datetime
 
+load_dotenv()
+
 app = Flask(__name__)
 app.config["DATABASE"] = os.path.join(app.instance_path, "database.sqlite")
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
 
 def get_db():
@@ -34,6 +38,7 @@ def init_db():
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
+        session.pop("_flashes", None)
         time = int(request.form.get("time_lost"))
         username = request.cookies.get("username")
         db = get_db()
@@ -56,10 +61,14 @@ def index():
                 print("DB error inserting time: " + str(e))
                 error = "Something went wrong with the database. Not your fault probably. Fixing..."
 
-        return error or "Success!"
+        if error is not None:
+            flash(error)
+
+        return redirect(url_for("index"))
 
 
     else:
+        print(get_flashed_messages())
         username = request.cookies.get("username")
         if username is not None:
             db = get_db()
@@ -74,9 +83,21 @@ def index():
 
 @app.route("/auth/register", methods=["POST"])
 def register():
+    session.pop("_flashes", None)
     error = None
     username = escape(request.form.get("username"))
     db = get_db()
+    user = db.execute("SELECT * FROM user WHERE username = ?", (username,)).fetchone()
+    if user:
+        resp = redirect(url_for("index"))
+        resp.set_cookie(
+            "username", username,
+            max_age=60* 60*24*7, # 7 days
+            httponly=False, # must be false so js could read it
+            samesite="Lax"
+        )
+        return resp
+    
     try:
         db.execute(
             "INSERT INTO user (username, time_value) VALUES (?, ?)", (username, 0)
@@ -86,11 +107,11 @@ def register():
         error = "Something is up with the database. Try again later, it's not your fault. Fixing..."
         print("DB error creating user: " + str(e))
 
-    # set cookies
-    
     if error is not None:
-        return error
+        flash(error)
+        return redirect(url_for("index"))
     
+    # set cookies
     resp = redirect(url_for("index"))
     resp.set_cookie(
         "username", username,
