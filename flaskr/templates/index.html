@@ -6,7 +6,7 @@
   </head>
   <body>
     <h1 id="h1">Your lost time from the moment you've registered.</h1>
-    {{ time }}
+    <div class="time-lost-counter">{{ time }}</div>
     <label for="h1">How much did you loose today in minutes?</label>
     <form action="/" method="post">
       <input type="number" name="time_lost" required>

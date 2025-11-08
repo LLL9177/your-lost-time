@@ -14,3 +14,13 @@ const popupRegister = document.querySelector(".popup-register");
 if (!username) {
   popupRegister.classList.remove("hidden");
 }
+
+// background
+const randomizedNumber = Math.float(Math.random(0, 3));
+const backgroundPhotosList = [
+  "../static/images/1.jpg",
+  "../static/image/2.jpg",
+  "../static/image/3.jpg"
+]
+
+doocument.body.style.backgroundImage = `url("${backgroundPhotosList[randomizedNumber]}")`

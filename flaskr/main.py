@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, g, session, current_app, redirect, url_for
+from flask import Flask, request, render_template, g, session, current_app, redirect, url_for, make_response
 from markupsafe import escape
 import click
 import sqlite3
@@ -63,9 +63,13 @@ def index():
         username = request.cookies.get("username")
         if username is not None:
             db = get_db()
-            time_lost = db.execute("SELECT * FROM user WHERE username = ?", (username,)).fetchone()["time_value"]
-            print(time_lost)
-            return render_template("index.html", time=time_lost)
+            time_lost = db.execute("SELECT * FROM user WHERE username = ?", (username,)).fetchone()
+            if time_lost is None:
+                resp = make_response(render_template("index.html"))
+                resp.delete_cookie("username")
+                return resp
+
+            return render_template("index.html", time=time_lost["time_value"])
         return render_template("index.html")
 
 @app.route("/auth/register", methods=["POST"])
