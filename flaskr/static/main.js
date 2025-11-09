@@ -57,7 +57,13 @@ let lostTimeM = Number(lostTime.innerText);
 let lostTimeH = convertToHours(lostTimeM);
 lostTimeM -= lostTimeH*60;
 
-lostTime.innerText = `${lostTimeH}h ${lostTimeM}m`
+if (lostTimeH == 0) {
+  lostTime.innerText = `${lostTimeM}m`;
+} else if (lostTimeM == 0) {
+  lostTime.innerText = `${lostTimeH}h`;
+} else {
+  lostTime.innerText = `${lostTimeH}h ${lostTimeM}m`;
+}
 
 function convertToHours(minutes) {
   return Math.floor(minutes/60);
