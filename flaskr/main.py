@@ -68,18 +68,26 @@ def index():
 
 
     else:
+        ua = request.user_agent.string.lower()
+        if any(x in ua for x in ["android", "iphone", "ipad", "mobile"]):
+            device_type = "mobile"
+        else:
+            device_type = "desktop"
+        
+        print(device_type)
+
         print(get_flashed_messages())
         username = request.cookies.get("username")
         if username is not None:
             db = get_db()
             time_lost = db.execute("SELECT * FROM user WHERE username = ?", (username,)).fetchone()
             if time_lost is None:
-                resp = make_response(render_template("index.html"))
+                resp = make_response(render_template("index.html")) if device_type == "desktop" else make_response(render_template("index_mob.html"))
                 resp.delete_cookie("username")
                 return resp
 
-            return render_template("index.html", time=time_lost["time_value"])
-        return render_template("index.html")
+            return render_template("index.html", time=time_lost["time_value"]) if device_type == "desktop" else render_template("index_mob.html", time=time_lost["time_value"])
+        return render_template("index.html") if device_type == "desktop" else render_template("index_mob.html")
 
 @app.route("/auth/register", methods=["POST"])
 def register():

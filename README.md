@@ -11,6 +11,7 @@ A minimalist web application that helps you track time you've lost or wasted. Bu
   - Elegant typography using Radley and Momo Signature fonts
   - Smooth transitions and animations
   - Responsive flash messages with progress bar
+  - Mobile-friendly design that works on phones and tablets
 - **Persistent Storage**: Data stored in SQLite database
 - **Cookie-based Authentication**: 7-day session persistence
 

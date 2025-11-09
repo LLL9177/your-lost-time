@@ -8,6 +8,7 @@ body {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  overflow: hidden;
   justify-content: center;
   align-items: center;
 }
@@ -36,18 +37,18 @@ button {
 }
 
 #h1 {
-  margin-top: 17vh;
-  margin-bottom: 21vh;
+  margin-bottom: 200px;
   font-size: 60px;
   color: white;
   font-family: "Radley", serif;
   font-weight: 400;
+  text-align: center;
 }
 
 .time-lost-counter {
   color: white;
-  font-size: 45px;
-  margin-bottom: 21vh;
+  font-size: 100px;
+  margin-bottom: 400px;
   font-family: "Momo Signature", cursive;
   font-style: normal;
   text-shadow: 0px 0px 10px white;
@@ -56,23 +57,24 @@ button {
 label {
   color: white;
   font-family: "Radley", serif;
-  margin-bottom: 5vh;
-  font-size: 20px;
+  margin-bottom: 50px;
+  font-size: 40px;
 }
 
 .register-again {
-  color: #DDDD;
-  margin-top: 12vh;
-  background-color: #171717;
+  color: white;
+  margin-bottom: 300px;
+  background-color: rgba(0, 0, 0, 0.3);
   width: 500px;
-  height: 40px;
+  height: 70px;
   display: flex;
   justify-content: center;
-  border-top-left-radius: 100px;
-  border-top-right-radius: 100px;
+  border-radius: 10px;
   border: none;
+  border-bottom: 3px solid rgb(27, 87, 15);
   font-family: "Radley", serif;
-  font-size: 18px;
+  font-size: 30px;
+  align-items: center;
 }
 
 input[type=number]::-webkit-inner-spin-button,
@@ -85,8 +87,28 @@ input[type=number] {
     appearance: textfield;
 }
 
+.lost-time_form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 200px;
+}
+
+.lost-time_form input {
+    height: 50px;
+    width: 400px;
+    font-size: 25px;
+}
+
+.lost-time_form button {
+    width: 100px;
+    height: 50px;
+    font-size: 20px;
+    border: none;
+}
+
 .lost-time_form input, .lost-time_form button {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.3);
   backdrop-filter: blur(15px);
   color: white;
   border: 1px solid rgba(35, 35, 35, 0);
@@ -97,12 +119,15 @@ input[type=number] {
 
 .lost-time_form input {
   transition: border-bottom, 0.1s ease;
+  margin-right: 5px;
+  font-size: 20px;
 }
 
 .lost-time_form input:focus {
   outline: none;
   border-bottom: 1px solid white;
 }
+
 
 
 .popup-register {
@@ -132,7 +157,7 @@ input[type=number] {
 }
 
 .popup-register input {
-  margin-bottom: 2%;
+  margin-bottom: 20px;
   width: 300px;
   height: 40px;
 }
@@ -146,7 +171,8 @@ input[type=number] {
   display: flex;
   font-size: 25px;
   margin: 15px;
-  margin-bottom: 10%;
+  margin-top: -40px;
+  margin-bottom: 60px;
 }
 
 .popup-dimmer {
