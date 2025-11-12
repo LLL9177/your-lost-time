@@ -13,7 +13,11 @@
 <body>
     <button class="register-again">Register or log in again</button>
 
-    <h1 id="h1">Your lost time from the moment you've registered.</h1>
+    {% if from_date %}
+      <h1 id="h1">Your lost time from {{ from_date }}.</h1>
+    {% else %}
+      <h1 id="h1">Your lost time from you've registered.</h1>
+    {% endif %}
     <div class="time-lost-counter">{{ time }}</div>
     <label for="h1">How much time did you loose today in minutes?</label>
     <form action="/" method="post" class="lost-time_form">

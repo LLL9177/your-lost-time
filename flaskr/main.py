@@ -83,6 +83,9 @@ def index():
                 resp = make_response(render_template("index.html")) if device_type == "desktop" else make_response(render_template("index_mob.html"))
                 resp.delete_cookie("username")
                 return resp
+            else:
+                from_date = time_lost["current_date"]
+                return render_template("index.html", time=time_lost["time_value"], from_date=from_date) if device_type == "desktop" else render_template("index_mob.html", time=time_lost["time_value"], from_date=from_date)
 
             return render_template("index.html", time=time_lost["time_value"]) if device_type == "desktop" else render_template("index_mob.html", time=time_lost["time_value"])
         return render_template("index.html") if device_type == "desktop" else render_template("index_mob.html")
