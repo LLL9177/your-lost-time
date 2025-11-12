@@ -3,5 +3,6 @@ DROP TABLE IF EXISTS user;
 CREATE TABLE user (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   username TEXT NOT NULL UNIQUE,
-  time_value INTEGER NOT NULL
+  time_value INTEGER NOT NULL,
+  current_date DATE NOT NULL
 );

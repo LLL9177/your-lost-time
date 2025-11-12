@@ -1,5 +1,3 @@
-"use strict";
-
 const dimmerDiv = document.querySelector(".dimmer");
 dimmerDiv.classList.remove("hidden")
 
@@ -26,8 +24,8 @@ const backgroundPhotosList = [
   "../static/images/2.jpg",
   "../static/images/3.jpg"
 ];
-
 document.body.style.backgroundImage = `url("${backgroundPhotosList[randomizedNumber]}")`;
+
 document.body.style.backgroundRepeat = "no-repeat";
 document.body.style.backgroundSize = "cover";
 
@@ -35,8 +33,7 @@ document.body.style.backgroundSize = "cover";
 const flashesDOMElement = document.querySelector(".flashes");
 if (flashesDOMElement) {
   const timeLine = document.querySelector(".timer-line");
-  const flashesText = document.querySelector(".timer-line p");
-  let timeLineWidth = 450; // px
+  let timeLineWidth = 100; // %
 
   flashesDOMElement.classList.remove("hidden")
 
@@ -46,8 +43,8 @@ if (flashesDOMElement) {
       flashesDOMElement.classList.add("hidden");
     }
 
-    timeLine.style.width = `${timeLineWidth}px`;
-    timeLineWidth--;  
+    timeLine.style.width = `${timeLineWidth}%`;
+    timeLineWidth-=0.2;  
   }, 10);
 }
 
@@ -68,3 +65,12 @@ if (lostTimeH == 0) {
 function convertToHours(minutes) {
   return Math.floor(minutes/60);
 }
+
+// when you click a button, you get redirected to a register page.
+const registerAgainButton = document.querySelector(".register-again");
+
+registerAgainButton.addEventListener("click", function() {
+  // Deletes a cookie by setting it to expire in the past
+  document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  window.location.href = '/';
+});

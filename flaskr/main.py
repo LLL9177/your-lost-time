@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 import click
 import sqlite3
 import os
-from datetime import datetime
+import datetime
 
 load_dotenv()
 
@@ -73,8 +73,6 @@ def index():
             device_type = "mobile"
         else:
             device_type = "desktop"
-        
-        print(device_type)
 
         print(get_flashed_messages())
         username = request.cookies.get("username")
@@ -95,6 +93,10 @@ def register():
     error = None
     username = escape(request.form.get("username"))
     db = get_db()
+    db_date = db.execute("SELECT * FROM user WHERE username = ?", (username,)).fetchone()
+    if db_date:
+        db_date = db_date["current_date"]
+
     user = db.execute("SELECT * FROM user WHERE username = ?", (username,)).fetchone()
     if user:
         resp = redirect(url_for("index"))
@@ -107,9 +109,16 @@ def register():
         return resp
     
     try:
-        db.execute(
-            "INSERT INTO user (username, time_value) VALUES (?, ?)", (username, 0)
-        )
+        if db_date is None: 
+            db.execute(
+                "INSERT INTO user (username, time_value, current_date) VALUES (?, ?, ?)", (username, 0, datetime.date.today())
+            )
+            flash("Created an account at: "+ datetime.date.today().strftime("%d-%m-%Y"))
+        else:
+            db.execute(
+                "UPDATE user SET username=?, time_value=? WHERE username=?", (username, 0)
+            )
+
         db.commit()
     except Exception as e:
         error = "Something is up with the database. Try again later, it's not your fault. Fixing..."
@@ -130,10 +139,11 @@ def register():
 
     return resp
 
-@app.route("/drop/cookies")
+@app.route("/drop/cookies", methods=["POST"])
 def drop_cookies():
     resp = redirect(url_for("index"))
     resp.delete_cookie("username")
+    flash("Cookies have been successfuly deleted")
     return resp
 
 @click.command("init-db")

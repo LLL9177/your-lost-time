@@ -92,6 +92,7 @@ input[type=number] {
     justify-content: center;
     align-items: center;
     margin-bottom: 200px;
+    transform: scale(1.5);
 }
 
 .lost-time_form input {
@@ -144,7 +145,7 @@ input[type=number] {
   align-items: center;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%) scale(1);
+  transform: translate(-50%, -50%) scale(2);
   flex-direction: column;
   text-align: center;
   z-index: 10;
@@ -188,13 +189,13 @@ input[type=number] {
   position: absolute;
   z-index: 20;
   background-color: rgb(25, 25, 25);
-  left: 100%;
-  top: 10px;
-  transform: translateX(-101%);
-  width: 450px;
+  left: 50%;
+  top: 20px;
+  transform: translateX(-50%);
+  width: 90%;
   height: fit-content;
   color: white;
-  font-size: 13px;
+  font-size: 30px;
   transition: opacity 0.5s ease;
 }
 
