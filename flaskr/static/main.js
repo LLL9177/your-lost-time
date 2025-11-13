@@ -48,23 +48,40 @@ if (flashesDOMElement) {
   }, 10);
 }
 
-// convert to minutes and hours
+// convert to minutes, hours and days
+class Converter  {
+  hours(minutes) {
+    return Math.floor(minutes/60);
+  };
+
+  days(hours) {
+    return Math.floor(hours/24);
+  };
+
+  weeks(days) {
+    return Math.floor(days/7);
+  };
+};
+
+const convertTo = new Converter
 const lostTime = document.querySelector(".time-lost-counter");
 let lostTimeM = Number(lostTime.innerText);
-let lostTimeH = convertToHours(lostTimeM);
+let lostTimeH = convertTo.hours(lostTimeM);
+let lostTimeD = convertTo.days(lostTimeH);
+let lostTimeW = convertTo.weeks(lostTimeD);
 lostTimeM -= lostTimeH*60;
+lostTimeH -= lostTimeD*24;
+lostTimeD -= lostTimeW*7;
 
-if (lostTimeH == 0) {
-  lostTime.innerText = `${lostTimeM}m`;
-} else if (lostTimeM == 0) {
-  lostTime.innerText = `${lostTimeH}h`;
-} else {
-  lostTime.innerText = `${lostTimeH}h ${lostTimeM}m`;
-}
+const parts = [];
 
-function convertToHours(minutes) {
-  return Math.floor(minutes/60);
-}
+if (lostTimeW) parts.push(`${lostTimeW}W`);
+if (lostTimeD) parts.push(`${lostTimeD}d`);
+if (lostTimeH) parts.push(`${lostTimeH}h`);
+if (lostTimeM) parts.push(`${lostTimeM}m`);
+
+lostTime.innerText = parts.join(" ") || "0m";
+
 
 // when you click a button, you get redirected to a register page.
 const registerAgainButton = document.querySelector(".register-again");

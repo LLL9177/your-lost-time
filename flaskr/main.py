@@ -26,7 +26,7 @@ def get_db():
 def close_db(e=None):
     db = g.pop("db", None)
     if db is not None:
-        db.close()
+        db.close()    
 
 
 def init_db():
@@ -94,7 +94,7 @@ def index():
 def register():
     session.pop("_flashes", None)
     error = None
-    username = escape(request.form.get("username"))
+    username = escape(request.form.get("username")).strip()
     db = get_db()
     db_date = db.execute("SELECT * FROM user WHERE username = ?", (username,)).fetchone()
     if db_date:
@@ -118,6 +118,7 @@ def register():
             )
             flash("Created an account at: "+ datetime.date.today().strftime("%d-%m-%Y"))
         else:
+            print("updating")
             db.execute(
                 "UPDATE user SET username=?, time_value=? WHERE username=?", (username, 0)
             )
