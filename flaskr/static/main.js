@@ -91,3 +91,75 @@ registerAgainButton.addEventListener("click", function() {
   document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
   window.location.href = '/';
 });
+
+// popup
+const lossesImg = document.querySelector(".saved-losses");
+const lossesDiv = document.querySelector(".popup-losses");
+const lossesDivChild = document.querySelector(".popup-losses_content");
+const childElements = Array.from(lossesDivChild.children);
+let lossesState = false; // true for opened
+childElements.forEach(el => {el.style.transform = "translateX(-100%)"})
+
+
+function lossesImgClick() {
+  lossesState = !lossesState;
+  childElements.forEach(el => {el.style.transform = "translateX(-100%)"})
+
+  if (lossesState) {
+    lossesDiv.style.transform = "translateX(0)";
+    lossesImg.style.transform = "translateX(450px)";
+
+
+    childElements.forEach((el, i) => {
+      el.style.transition = "transform 0.5s ease";
+      setTimeout(() => {
+        el.style.transform = "translateX(0)";
+      }, i * 80);
+    });
+
+  } else {
+    lossesDiv.style.transform = "translateX(-100%)";
+    Array.from(lossesDiv.children).forEach(el => {
+      el.style.transform = "translateX(0)";
+    });
+    lossesImg.style.transform = "translateX(0)";
+  }
+}
+
+
+// losses book content
+// first for styles. handle dropdown arrow click
+const dropDownArrow = document.querySelector(".dropdown-arrow");
+let arrowState = false // true for opened info.
+const moreInfo = document.querySelector(".more-info");
+const lossSomeLine = document.querySelector(".loss_some-line");
+
+function hanleDropdownArrowClick() {
+  arrowState = !arrowState;
+  
+  if (arrowState) {
+    dropDownArrow.classList.add("open");
+    moreInfo.style.visibility = "visible";
+    moreInfo.style.position = "static";
+    moreInfo.style.opacity = "1";
+    
+    // animation of line
+    let lossSomeLineHeight = 0;
+    const targetHeight = parseFloat(getComputedStyle(moreInfo).height)-5;
+    let lineAnimationInterval = setInterval(() => {
+      if (lossSomeLineHeight < targetHeight) {
+        lossSomeLineHeight+=10;
+        console.log(lossSomeLineHeight, targetHeight);
+        lossSomeLine.style.height = lossSomeLineHeight+"px";
+      } else {
+        clearInterval(lineAnimationInterval);
+      }
+    }, 1);
+  } else {
+    dropDownArrow.classList.remove("open");
+    moreInfo.style.visibility = "hidden";
+    moreInfo.style.position = "absolute";
+    moreInfo.style.opacity = "0";
+    lossSomeLine.style.height = "0px";
+  }
+};
