@@ -1,10 +1,7 @@
 from flask import Flask, request, render_template, g, current_app, redirect, url_for, make_response, flash, get_flashed_messages, session
 from markupsafe import escape
 from dotenv import load_dotenv
-import click
-import sqlite3
-import os
-import datetime
+import click, sqlite3, os, datetime, json
 
 load_dotenv()
 
@@ -45,6 +42,7 @@ def index():
         error = None
 
         user = db.execute("SELECT * FROM user WHERE username = ?", (username,)).fetchone()
+        # day_data = db.execute("SELECT * FROM days WHERE username = ?", (username,)).fetchone()
 
         if user is None:
             error = "User not found in the database"
@@ -97,6 +95,8 @@ def register():
     username = escape(request.form.get("username")).strip()
     db = get_db()
     db_date = db.execute("SELECT * FROM user WHERE username = ?", (username,)).fetchone()
+    day_data = db.execute("SELECT * FROM days WHERE username = ?", (username,)).fetchone()
+
     if db_date:
         db_date = db_date["current_date"]
 
@@ -114,11 +114,20 @@ def register():
     try:
         if db_date is None: 
             db.execute(
-                "INSERT INTO user (username, time_value, current_date) VALUES (?, ?, ?)", (username, 0, datetime.date.today())
+                "INSERT INTO user (username, time_value, current_date) VALUES (?, ?, ?)", 
+                (username, 0, datetime.date.today())
+            )
+
+            day_data_json = json.dumps({
+                "days_amount": 0,
+                "data": []
+            })
+            db.execute(
+                "INSERT INTO days (username, data) VALUES (?, ?)",
+                (username, day_data_json)
             )
             flash("Created an account at: "+ datetime.date.today().strftime("%d-%m-%Y"))
         else:
-            print("updating")
             db.execute(
                 "UPDATE user SET username=?, time_value=? WHERE username=?", (username, 0)
             )
