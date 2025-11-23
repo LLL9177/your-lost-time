@@ -104,7 +104,7 @@ childElements.forEach(el => {el.style.transform = "translateX(-100%)"})
 function lossesImgClick() {
   lossesState = !lossesState;
   childElements.forEach(el => {el.style.transform = "translateX(-100%)"})
-
+  
   if (lossesState) {
     lossesDiv.style.transform = "translateX(0)";
     lossesImg.style.transform = "translateX(450px)";
@@ -119,9 +119,6 @@ function lossesImgClick() {
 
   } else {
     lossesDiv.style.transform = "translateX(-100%)";
-    Array.from(lossesDiv.children).forEach(el => {
-      el.style.transform = "translateX(0)";
-    });
     lossesImg.style.transform = "translateX(0)";
   }
 }
@@ -133,33 +130,49 @@ const dropDownArrow = document.querySelector(".dropdown-arrow");
 let arrowState = false // true for opened info.
 const moreInfo = document.querySelector(".more-info");
 const lossSomeLine = document.querySelector(".loss_some-line");
+const lostInDay = document.querySelector(".lost-in-day");
 
 function hanleDropdownArrowClick() {
   arrowState = !arrowState;
+  const targetHeight = parseFloat(getComputedStyle(moreInfo).height)-5;
   
   if (arrowState) {
     dropDownArrow.classList.add("open");
-    moreInfo.style.visibility = "visible";
-    moreInfo.style.position = "static";
-    moreInfo.style.opacity = "1";
-    
-    // animation of line
-    let lossSomeLineHeight = 0;
-    const targetHeight = parseFloat(getComputedStyle(moreInfo).height)-5;
-    let lineAnimationInterval = setInterval(() => {
-      if (lossSomeLineHeight < targetHeight) {
-        lossSomeLineHeight+=10;
-        console.log(lossSomeLineHeight, targetHeight);
-        lossSomeLine.style.height = lossSomeLineHeight+"px";
-      } else {
-        clearInterval(lineAnimationInterval);
-      }
-    }, 1);
+    lostInDay.style.paddingBottom = targetHeight+15+"px";
+    setTimeout(() => {
+      // lostInDay.style.transition = "padding-bottom 0s ease";
+      // lostInDay.style.paddingBottom = 0+"px";
+      moreInfo.style.visibility = "visible";
+      // moreInfo.style.position = "static";
+      moreInfo.style.opacity = "1"
+      // animation of line
+      let lossSomeLineHeight = 0;
+      let lineAnimationInterval = setInterval(() => {
+        if (lossSomeLineHeight < targetHeight) {
+          lossSomeLineHeight+=10;
+          lossSomeLine.style.height = lossSomeLineHeight+"px";
+        } else {
+          clearInterval(lineAnimationInterval);
+        }
+      }, 1);
+    }, 100);
   } else {
     dropDownArrow.classList.remove("open");
-    moreInfo.style.visibility = "hidden";
-    moreInfo.style.position = "absolute";
+    lostInDay.style.transition = "padding-bottom 0.1s ease";
     moreInfo.style.opacity = "0";
-    lossSomeLine.style.height = "0px";
+    setTimeout(() => {
+      moreInfo.style.visibility = "hidden";
+      moreInfo.style.position = "absolute";
+      lostInDay.style.paddingBottom = targetHeight+15+"px";
+      setTimeout(() => {
+        // lossSomeLine.style.height = "0px";
+        lostInDay.style.paddingBottom = 0+"px";
+      }, 100);
+    }, 100);
   }
 };
+
+// closing cross for mobile
+function closeCross() {
+  lossesImgClick();
+}

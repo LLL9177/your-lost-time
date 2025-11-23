@@ -257,13 +257,15 @@ input[type=number] {
 }
 
 .more-info {
-  margin-top: 10px;
+  width: 100%;
+  height: fit-content;
+  bottom: 0;
   visibility: hidden;
   position: absolute;
   display: flex;
   flex-direction: column;
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.1s ease;
 }
 
 .more-info_pair {
@@ -275,9 +277,13 @@ input[type=number] {
   background-color: black;
   position: absolute;
   right: 30px;
-  top: 45px;
+  top: -5px;
   width: 2px;
   align-self: stretch;
   right: 35px;
   z-index: 7;
+}
+
+.lost-in-day {
+  transition: padding-bottom 0.2s ease;
 }

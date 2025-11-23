@@ -9,8 +9,10 @@ body {
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
+  overflow-x: hidden;
   justify-content: center;
   align-items: center;
+  user-select: none;
 }
 
 .dimmer {
@@ -207,4 +209,117 @@ input[type=number] {
   height: 2px;
   width: 100%;
   background-color: aquamarine;
+}
+
+.losses_close-cross {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  height: 75px;
+}
+
+.saved-losses {
+  height: 100px;
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  border-radius: 10px;
+  z-index: 5;
+  transition: transform 0.3s ease;
+}
+
+.popup-losses {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 4;
+  width: 100%;
+  height: 100%;
+  background-color: white; 
+  transform: translateY(-100%);
+  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.popup-losses_content {
+  height: 90%;
+  width: 100%;
+  padding: 10px;
+  transition: transform 1.5s ease-in-out;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  font-size: 40px;
+}
+
+.popup-losses_content::-webkit-scrollbar {
+  display: none;
+}
+
+.popup-losses_name {
+  font-size: 50px;
+  padding: 50px;
+  text-align: center;
+}
+
+.losses-day {
+  border-top: 4px solid black;
+  border-bottom: 4px solid black;
+  margin: -3px 0;
+}
+
+.dropdown-arrow_container {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100px;
+}
+
+.dropdown-arrow {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 80px;
+  user-select: none;
+  line-height: 1px;
+  transition: transform, 0.08s ease-in-out;
+}
+
+.dropdown-arrow.open {
+  transform: translateY(-50%) rotate(90deg);
+}
+
+.more-info {
+  width: 100%;
+  height: fit-content;
+  bottom: 0;
+  visibility: hidden;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  transition: opacity 0.1s ease;
+}
+
+.more-info_pair {
+  display: flex;
+  flex-direction: row;
+}
+
+.loss_some-line {
+  background-color: black;
+  position: absolute;
+  right: 30px;
+  top: -5px;
+  width: 4px;
+  align-self: stretch;
+  right: 35px;
+  z-index: 7;
+}
+
+.lost-in-day {
+  transition: padding-bottom 0.2s ease;
 }
