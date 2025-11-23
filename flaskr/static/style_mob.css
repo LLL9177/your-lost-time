@@ -310,14 +310,7 @@ input[type=number] {
 }
 
 .loss_some-line {
-  background-color: black;
-  position: absolute;
-  right: 30px;
-  top: -5px;
-  width: 4px;
-  align-self: stretch;
-  right: 35px;
-  z-index: 7;
+  display: none;
 }
 
 .lost-in-day {

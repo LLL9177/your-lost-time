@@ -5,4 +5,4 @@ CREATE TABLE user (
   username TEXT NOT NULL UNIQUE,
   time_value INTEGER NOT NULL,
   current_date DATE NOT NULL 
-);
+)
