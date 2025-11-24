@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, g, current_app, redirect, url_for, make_response, flash, get_flashed_messages, session
+from flask import Flask, request, render_template, g, current_app, redirect, url_for, make_response, flash, get_flashed_messages, session, jsonify
 from markupsafe import escape
 from dotenv import load_dotenv
 import click, sqlite3, os, datetime, json
@@ -48,7 +48,6 @@ def index():
             error = "User not found in the database"
         else:
             time += user["time_value"]
-            print(time, user["time_value"])
 
             try:
                 db.execute(
@@ -88,6 +87,28 @@ def index():
             return render_template("index.html", time=time_lost["time_value"]) if device_type == "desktop" else render_template("index_mob.html", time=time_lost["time_value"])
         return render_template("index.html") if device_type == "desktop" else render_template("index_mob.html")
 
+# This will be sent by JavaScript so instead of flashing messages, we will just return them.
+@app.route('/get/day-data', methods=['POST', 'GET'])
+def get_day_data():
+    if request.method == "POST":
+        username = request.json.get("username")
+        error = None
+
+        if username:
+            db = get_db()
+            data = db.execute("SELECT * FROM days WHERE username = ?", (username,)).fetchone()
+            data = jsonify(data["day_data"])
+        else:
+            error = "Something went wrong. Sorry, but you won't get your losses book."
+        
+        if error is not None:
+            return error
+        
+        return data
+
+    flash("Method not allowed.")
+    return redirect(url_for("index"))
+
 @app.route("/auth/register", methods=["POST"])
 def register():
     session.pop("_flashes", None)
@@ -95,7 +116,6 @@ def register():
     username = escape(request.form.get("username")).strip()
     db = get_db()
     db_date = db.execute("SELECT * FROM user WHERE username = ?", (username,)).fetchone()
-    day_data = db.execute("SELECT * FROM days WHERE username = ?", (username,)).fetchone()
 
     if db_date:
         db_date = db_date["current_date"]
@@ -118,12 +138,9 @@ def register():
                 (username, 0, datetime.date.today())
             )
 
-            day_data_json = json.dumps({
-                "days_amount": 0,
-                "data": []
-            })
+            day_data_json = json.dumps({})
             db.execute(
-                "INSERT INTO days (username, data) VALUES (?, ?)",
+                "INSERT INTO days (username, day_data) VALUES (?, ?)",
                 (username, day_data_json)
             )
             flash("Created an account at: "+ datetime.date.today().strftime("%d-%m-%Y"))

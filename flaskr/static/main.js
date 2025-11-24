@@ -17,6 +17,21 @@ if (!username) {
   popupDimmer.classList.remove("fully_hidden")
 }
 
+
+// get losses book data
+let xhr = new XMLHttpRequest();
+xhr.responseType = "json";
+xhr.open("post", "/get/day-data");
+xhr.setRequestHeader("Content-Type", "application/json");
+xhr.send(JSON.stringify({ username: username }));
+xhr.onload = () => {
+  const resp = xhr.response;
+};
+xhr.onerror = () => {
+  console.error(xhr.error);
+};
+
+
 // background
 const randomizedNumber = Math.floor(Math.random()*3);
 const backgroundPhotosList = [
