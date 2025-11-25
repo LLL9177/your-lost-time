@@ -19,6 +19,8 @@ if (!username) {
 
 
 // get losses book data
+daysNextIndex = 0;
+
 let xhr = new XMLHttpRequest();
 xhr.responseType = "json";
 xhr.open("post", "/get/day-data");
@@ -26,6 +28,44 @@ xhr.setRequestHeader("Content-Type", "application/json");
 xhr.send(JSON.stringify({ username: username }));
 xhr.onload = () => {
   const resp = xhr.response;
+  console.log(resp);
+  if (resp.length === 0) { return 0 } // basically ragequit
+
+  function newPopupLosses() {
+    const popupLossesTemplate = document.querySelector(".losses-day");
+    const createPair = popupLossesTemplate.cloneNode(true);
+    createPair.id = daysNextIndex;
+    createPair.style.transition = "transform, 0.5s ease";
+    createPair.style.position = "static";
+    daysNextIndex++;
+    document.querySelector(".popup-losses_content").appendChild(createPair);
+
+    return createPair
+  }
+
+  function evaluateDayLostTime(obj) {
+    let result = 0;
+    for (let value of Object.values(obj)) {
+      result += value;
+    };
+
+    return "lost: " + result;
+  }
+
+  let popups = [];
+  for (const [date, times] of Object.entries(resp)) {
+    for (const [time, value] of Object.entries(times)) {
+      const newElement = newPopupLosses();
+      newElement.querySelector(".time-of-day").innerText = time;
+      newElement.querySelector(".popup-losses_lost-time").innerText = value;
+      newElement.querySelector(".date").innerText = date; // assign here
+      newElement.querySelector(".lost-in-day").innerText = evaluateDayLostTime(times);
+      newElement.classList.remove("hidden");
+      newElement.querySelector(".dropdown-arrow_container").addEventListener("click", handleDropdwonArrowClick);
+      popups.push(newElement);
+    };
+  };
+
 };
 xhr.onerror = () => {
   console.error(xhr.error);
@@ -111,12 +151,11 @@ registerAgainButton.addEventListener("click", function() {
 const lossesImg = document.querySelector(".saved-losses");
 const lossesDiv = document.querySelector(".popup-losses");
 const lossesDivChild = document.querySelector(".popup-losses_content");
-const childElements = Array.from(lossesDivChild.children);
 let lossesState = false; // true for opened
-childElements.forEach(el => {el.style.transform = "translateX(-100%)"})
 
 
 function lossesImgClick() {
+  const childElements = Array.from(lossesDivChild.children);
   lossesState = !lossesState;
   childElements.forEach(el => {el.style.transform = "translateX(-100%)"})
   
@@ -141,15 +180,15 @@ function lossesImgClick() {
 
 // losses book content
 // first for styles. handle dropdown arrow click
-const dropDownArrow = document.querySelector(".dropdown-arrow");
 let arrowState = false // true for opened info.
 const moreInfo = document.querySelector(".more-info");
 const lossSomeLine = document.querySelector(".loss_some-line");
 const lostInDay = document.querySelector(".lost-in-day");
-
-function hanleDropdownArrowClick() {
+function handleDropdwonArrowClick() {
   arrowState = !arrowState;
   const targetHeight = parseFloat(getComputedStyle(moreInfo).height)-5;
+  const dropDownArrow = this.querySelector('.dropdown-arrow');
+  console.log(dropDownArrow);
   
   if (arrowState) {
     dropDownArrow.classList.add("open");
@@ -158,7 +197,6 @@ function hanleDropdownArrowClick() {
       // lostInDay.style.transition = "padding-bottom 0s ease";
       // lostInDay.style.paddingBottom = 0+"px";
       moreInfo.style.visibility = "visible";
-      // moreInfo.style.position = "static";
       moreInfo.style.opacity = "1"
       // animation of line
       let lossSomeLineHeight = 0;
@@ -177,7 +215,6 @@ function hanleDropdownArrowClick() {
     moreInfo.style.opacity = "0";
     setTimeout(() => {
       moreInfo.style.visibility = "hidden";
-      moreInfo.style.position = "absolute";
       lostInDay.style.paddingBottom = targetHeight+15+"px";
       setTimeout(() => {
         // lossSomeLine.style.height = "0px";
