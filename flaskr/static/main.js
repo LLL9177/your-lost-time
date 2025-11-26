@@ -49,19 +49,23 @@ xhr.onload = () => {
       result += value;
     };
 
-    return "lost: " + result;
+    return "Lost: " + convertMinutes(result);
   }
 
   let popups = [];
   for (const [date, times] of Object.entries(resp)) {
+    const newElement = newPopupLosses();
+    newElement.querySelector(".date").innerText = date; // assign here
+    newElement.querySelector(".lost-in-day").innerText = evaluateDayLostTime(times);
+    newElement.querySelector(".dropdown-arrow_container").addEventListener("click", function (e) {handleDropdwonArrowClick(e)});
     for (const [time, value] of Object.entries(times)) {
-      const newElement = newPopupLosses();
-      newElement.querySelector(".time-of-day").innerText = time;
-      newElement.querySelector(".popup-losses_lost-time").innerText = value;
-      newElement.querySelector(".date").innerText = date; // assign here
-      newElement.querySelector(".lost-in-day").innerText = evaluateDayLostTime(times);
+      const moreInfoPair = newElement.querySelector(".more-info_pair").cloneNode(true);
+      moreInfoPair.classList.remove("fully_hidden");
+      moreInfoPair.querySelector(".time-of-day").innerHTML = time+':';
+      moreInfoPair.querySelector(".popup-losses_lost-time").innerText = convertMinutes(String(value));
+      const moreInfo = newElement.querySelector(".more-info");
+      moreInfo.appendChild(moreInfoPair);
       newElement.classList.remove("hidden");
-      newElement.querySelector(".dropdown-arrow_container").addEventListener("click", handleDropdwonArrowClick);
       popups.push(newElement);
     };
   };
@@ -104,39 +108,42 @@ if (flashesDOMElement) {
 }
 
 // convert to minutes, hours and days
-class Converter  {
-  hours(minutes) {
-    return Math.floor(minutes/60);
+function convertMinutes(minutes) {
+  class Converter  {
+    hours(minutes) {
+      return Math.floor(minutes/60);
+    };
+
+    days(hours) {
+      return Math.floor(hours/24);
+    };
+
+    weeks(days) {
+      return Math.floor(days/7);
+    };
   };
 
-  days(hours) {
-    return Math.floor(hours/24);
-  };
+  const convertTo = new Converter;
+  let lostTimeM = Number(minutes);
+  let lostTimeH = convertTo.hours(lostTimeM);
+  let lostTimeD = convertTo.days(lostTimeH);
+  let lostTimeW = convertTo.weeks(lostTimeD);
+  lostTimeM -= lostTimeH*60;
+  lostTimeH -= lostTimeD*24;
+  lostTimeD -= lostTimeW*7;
 
-  weeks(days) {
-    return Math.floor(days/7);
-  };
-};
+  const parts = [];
 
-const convertTo = new Converter
+  if (lostTimeW) parts.push(`${lostTimeW}W`);
+  if (lostTimeD) parts.push(`${lostTimeD}d`);
+  if (lostTimeH) parts.push(`${lostTimeH}h`);
+  if (lostTimeM) parts.push(`${lostTimeM}m`);
+
+  return parts.join(' ') || "0m";
+}
+
 const lostTime = document.querySelector(".time-lost-counter");
-let lostTimeM = Number(lostTime.innerText);
-let lostTimeH = convertTo.hours(lostTimeM);
-let lostTimeD = convertTo.days(lostTimeH);
-let lostTimeW = convertTo.weeks(lostTimeD);
-lostTimeM -= lostTimeH*60;
-lostTimeH -= lostTimeD*24;
-lostTimeD -= lostTimeW*7;
-
-const parts = [];
-
-if (lostTimeW) parts.push(`${lostTimeW}W`);
-if (lostTimeD) parts.push(`${lostTimeD}d`);
-if (lostTimeH) parts.push(`${lostTimeH}h`);
-if (lostTimeM) parts.push(`${lostTimeM}m`);
-
-lostTime.innerText = parts.join(" ") || "0m";
-
+lostTime.innerText = convertMinutes(lostTime.innerText);
 
 // when you click a button, you get redirected to a register page.
 const registerAgainButton = document.querySelector(".register-again");
@@ -181,28 +188,40 @@ function lossesImgClick() {
 // losses book content
 // first for styles. handle dropdown arrow click
 let arrowState = false // true for opened info.
-const moreInfo = document.querySelector(".more-info");
-const lossSomeLine = document.querySelector(".loss_some-line");
-const lostInDay = document.querySelector(".lost-in-day");
-function handleDropdwonArrowClick() {
+function handleDropdwonArrowClick(e) {
+  const lossesDay = e.currentTarget.parentElement;
+  const moreInfo = lossesDay.querySelector(".more-info");
+  const lossSomeLine = lossesDay.querySelector(".loss_some-line");
+  const lostInDay = lossesDay.querySelector(".lost-in-day");
   arrowState = !arrowState;
-  const targetHeight = parseFloat(getComputedStyle(moreInfo).height)-5;
-  const dropDownArrow = this.querySelector('.dropdown-arrow');
-  console.log(dropDownArrow);
+  // instead of doing something with targetHeight, just increment the line height for each line.
+  function getTargetHeight(moreInfo) {
+    const style = window.getComputedStyle(moreInfo.querySelector(".time-of-day"));
+    console.log(style);
+    const lineHeight = parseFloat(style["line-height"]);
+    console.log(lineHeight)
+    const lineAmount = Array.from(moreInfo.children).length;
+    console.log(lineAmount)
+
+    return lineAmount*lineAmount;
+  }
+  const targetHeight = getTargetHeight(moreInfo);
+  console.log(targetHeight);
+  const dropDownArrow = e.currentTarget.querySelector('.dropdown-arrow');
   
   if (arrowState) {
     dropDownArrow.classList.add("open");
-    lostInDay.style.paddingBottom = targetHeight+15+"px";
+    lostInDay.style.paddingBottom = targetHeight+"px";
     setTimeout(() => {
       // lostInDay.style.transition = "padding-bottom 0s ease";
-      // lostInDay.style.paddingBottom = 0+"px";
+      // lostInDay.style.paddingBottom = "0px";
       moreInfo.style.visibility = "visible";
       moreInfo.style.opacity = "1"
       // animation of line
       let lossSomeLineHeight = 0;
       let lineAnimationInterval = setInterval(() => {
         if (lossSomeLineHeight < targetHeight) {
-          lossSomeLineHeight+=10;
+          lossSomeLineHeight+=5;
           lossSomeLine.style.height = lossSomeLineHeight+"px";
         } else {
           clearInterval(lineAnimationInterval);
