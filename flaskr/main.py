@@ -78,7 +78,7 @@ def convert_time_to_string(total_minutes):
 def index():
     if request.method == "POST":
         session.pop("_flashes", None)
-        time = int(request.form.get("time_lost"))
+        d_time = int(escape(request.form.get("time_lost")))
         username = request.cookies.get("username")
         db = get_db()
         error = None
@@ -89,19 +89,21 @@ def index():
         if user is None:
             error = "User not found in the database"
         else:
-            time += user["time_value"]
+            time = d_time + user["time_value"]
             now = datetime.datetime.now().strftime("%H:%M")
             today = datetime.datetime.today().strftime("%d:%m:%Y")
             day_data = json.loads(day_data["day_data"])
             print(day_data)
-            if day_data != {} and now in day_data:
-                day_data_value = day_data[today][now] + time
-            else:
-                day_data_value = time
 
             if today not in day_data:
                 day_data[today] = {}
 
+            if day_data != {} and now in day_data[today]:
+                print("it's working correctly.")
+                day_data_value = day_data[today][now] + d_time
+            else:
+                day_data_value = d_time
+                
             day_data[today][now] = day_data_value
             day_data = json.dumps(day_data)
 
@@ -164,7 +166,7 @@ def get_day_data():
                 for time in obj.values():
                     time = convert_time_to_string(time)
 
-            data = jsonify(data)
+            data = jsonify(data )
         else:
             error = "Something went wrong. Sorry, but you won't get your losses book."
         

@@ -187,61 +187,64 @@ function lossesImgClick() {
 
 // losses book content
 // first for styles. handle dropdown arrow click
-let arrowState = false // true for opened info.
+let arrowState = false;
+let isAnimating = false;
 function handleDropdwonArrowClick(e) {
+  if (isAnimating) return; // ignore clicks during animation
+
+  isAnimating = true; // lock
+  
   const lossesDay = e.currentTarget.parentElement;
   const moreInfo = lossesDay.querySelector(".more-info");
   const lossSomeLine = lossesDay.querySelector(".loss_some-line");
   const lostInDay = lossesDay.querySelector(".lost-in-day");
-  arrowState = !arrowState;
-  // instead of doing something with targetHeight, just increment the line height for each line.
-  function getTargetHeight(moreInfo) {
-    const style = window.getComputedStyle(moreInfo.querySelector(".time-of-day"));
-    console.log(style);
-    const lineHeight = parseFloat(style["line-height"]);
-    console.log(lineHeight)
-    const lineAmount = Array.from(moreInfo.children).length;
-    console.log(lineAmount)
 
-    return lineAmount*lineAmount;
-  }
-  const targetHeight = getTargetHeight(moreInfo);
-  console.log(targetHeight);
+  arrowState = !arrowState;
+
   const dropDownArrow = e.currentTarget.querySelector('.dropdown-arrow');
-  
+  const targetHeight = parseFloat(getComputedStyle(moreInfo).height) - 5;
+
   if (arrowState) {
     dropDownArrow.classList.add("open");
-    lostInDay.style.paddingBottom = targetHeight+"px";
+    lostInDay.style.paddingBottom = targetHeight + 15 + "px";
+
     setTimeout(() => {
-      // lostInDay.style.transition = "padding-bottom 0s ease";
-      // lostInDay.style.paddingBottom = "0px";
       moreInfo.style.visibility = "visible";
-      moreInfo.style.opacity = "1"
-      // animation of line
+      moreInfo.style.opacity = "1";
+
+      // Animate line
       let lossSomeLineHeight = 0;
-      let lineAnimationInterval = setInterval(() => {
+      let interval = setInterval(() => {
         if (lossSomeLineHeight < targetHeight) {
-          lossSomeLineHeight+=5;
-          lossSomeLine.style.height = lossSomeLineHeight+"px";
+          lossSomeLineHeight += 10;
+          lossSomeLine.style.height = lossSomeLineHeight + "px";
         } else {
-          clearInterval(lineAnimationInterval);
+          clearInterval(interval);
+          isAnimating = false; // unlock
         }
       }, 1);
     }, 100);
+
   } else {
     dropDownArrow.classList.remove("open");
     lostInDay.style.transition = "padding-bottom 0.1s ease";
     moreInfo.style.opacity = "0";
+
     setTimeout(() => {
       moreInfo.style.visibility = "hidden";
-      lostInDay.style.paddingBottom = targetHeight+15+"px";
+      moreInfo.style.position = "absolute";
+      lostInDay.style.paddingBottom = targetHeight + 15 + "px";
+
       setTimeout(() => {
-        // lossSomeLine.style.height = "0px";
-        lostInDay.style.paddingBottom = 0+"px";
+        lostInDay.style.paddingBottom = "0px";
+
+        // Unlock AFTER everything is done
+        isAnimating = false;
       }, 100);
+
     }, 100);
   }
-};
+}
 
 // closing cross for mobile
 function closeCross() {
