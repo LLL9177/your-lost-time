@@ -13,21 +13,19 @@
 <body>
     <img src="../static/images/book-icon.jpg" onclick="lossesImgClick()" class="saved-losses">
     <div class="popup-losses">
-      <img src="../static/images/cross.png" class="losses_close-cross" onclick="closeCross()">
-
       <h2 class="popup-losses_name">Your time losses book</h2>
       <div class="popup-losses_content">
         <!-- JavaScript will load this template -->
-         <section class="losses-day">
+         <section class="losses-day hidden">
             <span class="date">DD:MM:YYYY</span>
             <p class="lost-in-day">hh:mm.ss</p>
             <div class="dropdown-arrow_container">
-            <span class="dropdown-arrow" onclick="hanleDropdownArrowClick()">&#9660;</span>
+              <span class="dropdown-arrow">&#9660;</span>
             </div>
             <div class="more-info">
               <div class="loss_some-line"></div> <!-- placeholder -->
-              <div class="more-info_pair">
-                <span class="time-of-day">HH:mm -- </span><p class="popup-losses_lost-time">__:__.__</p> 
+              <div class="more-info_pair fully_hidden">
+                <span class="time-of-day">HH:mm -- </span>&nbsp;<p class="popup-losses_lost-time">__:__.__</p> 
               </div>
               <!-- JS will copy it if you inserted many times in one day -->
             </div>

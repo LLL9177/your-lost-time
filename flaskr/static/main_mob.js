@@ -2,6 +2,7 @@
 // And it's actually using variables that are defined in the main.js. So it's kinda like 1 file.
 function lossesImgClick() {
   lossesState = !lossesState;
+  const childElements = Array.from(document.querySelector(".popup-losses").children);
   childElements.forEach(el => {el.style.transform = "translateX(-100%)"})
   
   if (lossesState) {

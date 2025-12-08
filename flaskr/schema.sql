@@ -1,8 +1,14 @@
 DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS days;
 
 CREATE TABLE user (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   username TEXT NOT NULL UNIQUE,
   time_value INTEGER NOT NULL,
   current_date DATE NOT NULL 
-)
+);
+
+CREATE TABLE days (
+  username TEXT PRIMARY KEY,
+  day_data TEXT NOT NULL
+);

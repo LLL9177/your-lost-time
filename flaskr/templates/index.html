@@ -15,17 +15,17 @@
     <div class="popup-losses">
       <h2 class="popup-losses_name">Your time losses book</h2>
       <div class="popup-losses_content">
-        <!-- JavaScript will load this template -->
-         <section class="losses-day">
+        <!-- JavaScript will copy this template -->
+         <section class="losses-day hidden">
             <span class="date">DD:MM:YYYY</span>
             <p class="lost-in-day">hh:mm.ss</p>
             <div class="dropdown-arrow_container">
-            <span class="dropdown-arrow" onclick="hanleDropdownArrowClick()">&#9660;</span>
+              <span class="dropdown-arrow">&#9660;</span>
             </div>
             <div class="more-info">
               <div class="loss_some-line"></div>
-              <div class="more-info_pair">
-                <span class="time-of-day">HH:mm -- </span><p class="popup-losses_lost-time">__:__.__</p> 
+              <div class="more-info_pair fully_hidden">
+                <span class="time-of-day">HH:mm -- </span>&nbsp;<p class="popup-losses_lost-time">__:__.__</p> 
               </div>
               <!-- JS will copy it if you inserted many times in one day -->
             </div>

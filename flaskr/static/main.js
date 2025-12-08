@@ -17,6 +17,65 @@ if (!username) {
   popupDimmer.classList.remove("fully_hidden")
 }
 
+
+// get losses book data
+daysNextIndex = 0;
+
+let xhr = new XMLHttpRequest();
+xhr.responseType = "json";
+xhr.open("post", "/get/day-data");
+xhr.setRequestHeader("Content-Type", "application/json");
+xhr.send(JSON.stringify({ username: username }));
+xhr.onload = () => {
+  const resp = xhr.response;
+  console.log(resp);
+  if (resp.length === 0) { return 0 } // basically ragequit
+
+  function newPopupLosses() {
+    const popupLossesTemplate = document.querySelector(".losses-day");
+    const createPair = popupLossesTemplate.cloneNode(true);
+    createPair.id = daysNextIndex;
+    createPair.style.transition = "transform, 0.5s ease";
+    createPair.style.position = "static";
+    daysNextIndex++;
+    document.querySelector(".popup-losses_content").appendChild(createPair);
+
+    return createPair
+  }
+
+  function evaluateDayLostTime(obj) {
+    let result = 0;
+    for (let value of Object.values(obj)) {
+      result += value;
+    };
+
+    return "Lost: " + convertMinutes(result);
+  }
+
+  let popups = [];
+  for (const [date, times] of Object.entries(resp)) {
+    const newElement = newPopupLosses();
+    newElement.querySelector(".date").innerText = date; // assign here
+    newElement.querySelector(".lost-in-day").innerText = evaluateDayLostTime(times);
+    newElement.querySelector(".dropdown-arrow_container").addEventListener("click", function (e) {handleDropdwonArrowClick(e)});
+    for (const [time, value] of Object.entries(times)) {
+      const moreInfoPair = newElement.querySelector(".more-info_pair").cloneNode(true);
+      moreInfoPair.classList.remove("fully_hidden");
+      moreInfoPair.querySelector(".time-of-day").innerHTML = time+':';
+      moreInfoPair.querySelector(".popup-losses_lost-time").innerText = convertMinutes(String(value));
+      const moreInfo = newElement.querySelector(".more-info");
+      moreInfo.appendChild(moreInfoPair);
+      newElement.classList.remove("hidden");
+      popups.push(newElement);
+    };
+  };
+
+};
+xhr.onerror = () => {
+  console.error(xhr.error);
+};
+
+
 // background
 const randomizedNumber = Math.floor(Math.random()*3);
 const backgroundPhotosList = [
@@ -49,39 +108,42 @@ if (flashesDOMElement) {
 }
 
 // convert to minutes, hours and days
-class Converter  {
-  hours(minutes) {
-    return Math.floor(minutes/60);
+function convertMinutes(minutes) {
+  class Converter  {
+    hours(minutes) {
+      return Math.floor(minutes/60);
+    };
+
+    days(hours) {
+      return Math.floor(hours/24);
+    };
+
+    weeks(days) {
+      return Math.floor(days/7);
+    };
   };
 
-  days(hours) {
-    return Math.floor(hours/24);
-  };
+  const convertTo = new Converter;
+  let lostTimeM = Number(minutes);
+  let lostTimeH = convertTo.hours(lostTimeM);
+  let lostTimeD = convertTo.days(lostTimeH);
+  let lostTimeW = convertTo.weeks(lostTimeD);
+  lostTimeM -= lostTimeH*60;
+  lostTimeH -= lostTimeD*24;
+  lostTimeD -= lostTimeW*7;
 
-  weeks(days) {
-    return Math.floor(days/7);
-  };
-};
+  const parts = [];
 
-const convertTo = new Converter
+  if (lostTimeW) parts.push(`${lostTimeW}W`);
+  if (lostTimeD) parts.push(`${lostTimeD}d`);
+  if (lostTimeH) parts.push(`${lostTimeH}h`);
+  if (lostTimeM) parts.push(`${lostTimeM}m`);
+
+  return parts.join(' ') || "0m";
+}
+
 const lostTime = document.querySelector(".time-lost-counter");
-let lostTimeM = Number(lostTime.innerText);
-let lostTimeH = convertTo.hours(lostTimeM);
-let lostTimeD = convertTo.days(lostTimeH);
-let lostTimeW = convertTo.weeks(lostTimeD);
-lostTimeM -= lostTimeH*60;
-lostTimeH -= lostTimeD*24;
-lostTimeD -= lostTimeW*7;
-
-const parts = [];
-
-if (lostTimeW) parts.push(`${lostTimeW}W`);
-if (lostTimeD) parts.push(`${lostTimeD}d`);
-if (lostTimeH) parts.push(`${lostTimeH}h`);
-if (lostTimeM) parts.push(`${lostTimeM}m`);
-
-lostTime.innerText = parts.join(" ") || "0m";
-
+lostTime.innerText = convertMinutes(lostTime.innerText);
 
 // when you click a button, you get redirected to a register page.
 const registerAgainButton = document.querySelector(".register-again");
@@ -96,12 +158,11 @@ registerAgainButton.addEventListener("click", function() {
 const lossesImg = document.querySelector(".saved-losses");
 const lossesDiv = document.querySelector(".popup-losses");
 const lossesDivChild = document.querySelector(".popup-losses_content");
-const childElements = Array.from(lossesDivChild.children);
 let lossesState = false; // true for opened
-childElements.forEach(el => {el.style.transform = "translateX(-100%)"})
 
 
 function lossesImgClick() {
+  const childElements = Array.from(lossesDivChild.children);
   lossesState = !lossesState;
   childElements.forEach(el => {el.style.transform = "translateX(-100%)"})
   
@@ -126,51 +187,64 @@ function lossesImgClick() {
 
 // losses book content
 // first for styles. handle dropdown arrow click
-const dropDownArrow = document.querySelector(".dropdown-arrow");
-let arrowState = false // true for opened info.
-const moreInfo = document.querySelector(".more-info");
-const lossSomeLine = document.querySelector(".loss_some-line");
-const lostInDay = document.querySelector(".lost-in-day");
+let arrowState = false;
+let isAnimating = false;
+function handleDropdwonArrowClick(e) {
+  if (isAnimating) return; // ignore clicks during animation
 
-function hanleDropdownArrowClick() {
-  arrowState = !arrowState;
-  const targetHeight = parseFloat(getComputedStyle(moreInfo).height)-5;
+  isAnimating = true; // lock
   
+  const lossesDay = e.currentTarget.parentElement;
+  const moreInfo = lossesDay.querySelector(".more-info");
+  const lossSomeLine = lossesDay.querySelector(".loss_some-line");
+  const lostInDay = lossesDay.querySelector(".lost-in-day");
+
+  arrowState = !arrowState;
+
+  const dropDownArrow = e.currentTarget.querySelector('.dropdown-arrow');
+  const targetHeight = parseFloat(getComputedStyle(moreInfo).height) - 5;
+
   if (arrowState) {
     dropDownArrow.classList.add("open");
-    lostInDay.style.paddingBottom = targetHeight+15+"px";
+    lostInDay.style.paddingBottom = targetHeight + 15 + "px";
+
     setTimeout(() => {
-      // lostInDay.style.transition = "padding-bottom 0s ease";
-      // lostInDay.style.paddingBottom = 0+"px";
       moreInfo.style.visibility = "visible";
-      // moreInfo.style.position = "static";
-      moreInfo.style.opacity = "1"
-      // animation of line
+      moreInfo.style.opacity = "1";
+
+      // Animate line
       let lossSomeLineHeight = 0;
-      let lineAnimationInterval = setInterval(() => {
+      let interval = setInterval(() => {
         if (lossSomeLineHeight < targetHeight) {
-          lossSomeLineHeight+=10;
-          lossSomeLine.style.height = lossSomeLineHeight+"px";
+          lossSomeLineHeight += 10;
+          lossSomeLine.style.height = lossSomeLineHeight + "px";
         } else {
-          clearInterval(lineAnimationInterval);
+          clearInterval(interval);
+          isAnimating = false; // unlock
         }
       }, 1);
     }, 100);
+
   } else {
     dropDownArrow.classList.remove("open");
     lostInDay.style.transition = "padding-bottom 0.1s ease";
     moreInfo.style.opacity = "0";
+
     setTimeout(() => {
       moreInfo.style.visibility = "hidden";
       moreInfo.style.position = "absolute";
-      lostInDay.style.paddingBottom = targetHeight+15+"px";
+      lostInDay.style.paddingBottom = targetHeight + 15 + "px";
+
       setTimeout(() => {
-        // lossSomeLine.style.height = "0px";
-        lostInDay.style.paddingBottom = 0+"px";
+        lostInDay.style.paddingBottom = "0px";
+
+        // Unlock AFTER everything is done
+        isAnimating = false;
       }, 100);
+
     }, 100);
   }
-};
+}
 
 // closing cross for mobile
 function closeCross() {
