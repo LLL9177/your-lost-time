@@ -183,6 +183,7 @@ def register():
     session.pop("_flashes", None)
     error = None
     username = escape(request.form.get("username")).strip()
+    password = escape(request.form.get("password")).strip()
     db = get_db()
     db_date = db.execute("SELECT * FROM user WHERE username = ?", (username,)).fetchone()
 
@@ -191,43 +192,47 @@ def register():
 
     user = db.execute("SELECT * FROM user WHERE username = ?", (username,)).fetchone()
     if user:
-        resp = redirect(url_for("index"))
-        resp.set_cookie(
-            "username", username,
-            max_age=60* 60*24*7, # 7 days
-            httponly=False, # must be false so js could read it
-            samesite="Lax"
-        )
-        return resp
-    
-    try:
-        if db_date is None: 
-            db.execute(
-                "INSERT INTO user (username, time_value, current_date) VALUES (?, ?, ?)", 
-                (username, 0, datetime.date.today())
-            )
-
-            day_data_json = json.dumps({})
-            db.execute(
-                "INSERT INTO days (username, day_data) VALUES (?, ?)",
-                (username, day_data_json)
-            )
-            flash("Created an account at: "+ datetime.date.today().strftime("%d-%m-%Y"))
+        if user["password"] != password:
+            error = "Incorrect username or password." # I know what's incorrect is password, but it's just better to write that.
         else:
-            db.execute(
-                "UPDATE user SET username=?, time_value=? WHERE username=?", (username, 0)
+            resp = redirect(url_for("index"))
+            resp.set_cookie(
+                "username", username,
+                max_age=60* 60*24*7, # 7 days
+                httponly=False, # must be false so js could read it
+                samesite="Lax"
             )
+            return resp
+    
+    if error is None:
+        try:
+            if db_date is None: 
+                db.execute(
+                    "INSERT INTO user (username, password, time_value, current_date) VALUES (?, ?, ?, ?)", 
+                    (username, password, 0, datetime.date.today())
+                )
 
-        db.commit()
-    except Exception as e:
-        error = "Something is up with the database. Try again later, it's not your fault. Fixing..."
-        print("DB error creating user: " + str(e))
+                day_data_json = json.dumps({})
+                db.execute(
+                    "INSERT INTO days (username, day_data) VALUES (?, ?)",
+                    (username, day_data_json)
+                )
+                flash("Created an account at: "+ datetime.date.today().strftime("%d-%m-%Y"))
+            else:
+                db.execute(
+                    "UPDATE user SET username=?, time_value=? WHERE username=?", (username, 0)
+                )
+
+            db.commit()
+        except Exception as e:
+            error = "Something is up with the database. Try again later, it's not your fault. Fixing..."
+            print("DB error creating user: " + str(e))
 
     if error is not None:
         flash(error)
         return redirect(url_for("index"))
     
-    # set cookies
+    # set cookies. We are also doing it here because if there is no user, the app will try to create one
     resp = redirect(url_for("index"))
     resp.set_cookie(
         "username", username,
