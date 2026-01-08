@@ -3,3 +3,4 @@ flaskr/instance
 .venv
 flaskr/__pycache__
 flaskr/.env
+todo.txt
