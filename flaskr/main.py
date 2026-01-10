@@ -218,10 +218,6 @@ def register():
                     (username, day_data_json)
                 )
                 flash("Created an account at: "+ datetime.date.today().strftime("%d-%m-%Y"))
-            else:
-                db.execute(
-                    "UPDATE user SET username=?, time_value=? WHERE username=?", (username, 0)
-                )
 
             db.commit()
         except Exception as e:
