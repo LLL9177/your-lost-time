@@ -8,8 +8,6 @@ body {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  overflow: hidden;
-  overflow-x: hidden;
   justify-content: center;
   align-items: center;
   user-select: none;
@@ -298,7 +296,7 @@ input[type=number] {
 .more-info {
   width: 100%;
   height: fit-content;
-  bottom: 0;
+  top: 8%;
   visibility: hidden;
   position: absolute;
   display: flex;
