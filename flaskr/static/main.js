@@ -245,8 +245,3 @@ function handleDropdwonArrowClick(e) {
     }, 100);
   }
 }
-
-// closing cross for mobile
-function closeCross() {
-  lossesImgClick();
-}
