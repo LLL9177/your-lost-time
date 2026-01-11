@@ -93,13 +93,11 @@ def index():
             now = datetime.datetime.now().strftime("%H:%M")
             today = datetime.datetime.today().strftime("%d:%m:%Y")
             day_data = json.loads(day_data["day_data"])
-            print(day_data)
 
             if today not in day_data:
                 day_data[today] = {}
 
             if day_data != {} and now in day_data[today]:
-                print("it's working correctly.")
                 day_data_value = day_data[today][now] + d_time
             else:
                 day_data_value = d_time
