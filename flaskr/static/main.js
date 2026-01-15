@@ -20,6 +20,7 @@ if (!username) {
 
 // get losses book data
 daysNextIndex = 0;
+arrowsState = {};
 
 let xhr = new XMLHttpRequest();
 xhr.responseType = "json";
@@ -37,6 +38,7 @@ xhr.onload = () => {
     createPair.id = daysNextIndex;
     createPair.style.transition = "transform, 0.5s ease";
     createPair.style.position = "static";
+    arrowsState[String(daysNextIndex)] = false;
     daysNextIndex++;
     document.querySelector(".popup-losses_content").appendChild(createPair);
 
@@ -187,7 +189,6 @@ function lossesImgClick() {
 
 // losses book content
 // first for styles. handle dropdown arrow click
-let arrowState = false;
 let isAnimating = false;
 function handleDropdwonArrowClick(e) {
   if (isAnimating) return; // ignore clicks during animation
@@ -199,12 +200,13 @@ function handleDropdwonArrowClick(e) {
   const lossSomeLine = lossesDay.querySelector(".loss_some-line");
   const lostInDay = lossesDay.querySelector(".lost-in-day");
 
-  arrowState = !arrowState;
+  arrowsState[lossesDay.id] = !arrowsState[lossesDay.id];
+  thisArrowState = arrowsState[lossesDay.id];
 
   const dropDownArrow = e.currentTarget.querySelector('.dropdown-arrow');
   const targetHeight = parseFloat(getComputedStyle(moreInfo).height) - 5;
 
-  if (arrowState) {
+  if (thisArrowState) {
     dropDownArrow.classList.add("open");
     lostInDay.style.paddingBottom = targetHeight + 15 + "px";
 
